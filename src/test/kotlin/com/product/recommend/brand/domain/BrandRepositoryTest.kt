@@ -1,8 +1,8 @@
 package com.product.recommend.brand.domain
 
+import com.product.recommend.brand.enums.ProductCategory
 import com.product.recommend.brand.repository.BrandRepository
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,21 +10,20 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.data.repository.findByIdOrNull
 
 @DataJpaTest
-class BrandRepositoryTest(@Autowired
-                     private val brandRepository: BrandRepository) {
+class BrandRepositoryTest(
+        @Autowired
+        private val brandRepository: BrandRepository) {
 
-    private var saveBrand = BrandEntity("test_title")
-
+    private var saveBrand: BrandEntity = BrandEntity("test_title", ProductCategory.KEYBOARD)
 
     @BeforeEach
     fun setUp() {
-        saveBrand = brandRepository.save(BrandEntity("test_title"))
-
+        saveBrand = brandRepository.save(saveBrand)
     }
 
     @Test
     fun createTest() {
-        val brandEntity = BrandEntity("title")
+        val brandEntity = BrandEntity("title", ProductCategory.KEYBOARD)
         val save = brandRepository.save(brandEntity)
 
         assertEquals(save.title, brandEntity.title)
@@ -40,11 +39,14 @@ class BrandRepositoryTest(@Autowired
     fun modifyTest() {
 
         val findBrand = saveBrand.id?.let { brandRepository.findByIdOrNull(it) }
-        findBrand?.modifyTitle("modify-title")
+        findBrand?.modifyBrand("modify-title", ProductCategory.HEAD_SET)
 
         val expected = brandRepository.findByIdOrNull(findBrand?.id)
-        println(expected)
-        assertEquals(expected?.title, "modify-title")
+
+        assertAll(
+                { assertEquals(expected?.title, "modify-title") },
+                { assertEquals(expected?.category, ProductCategory.HEAD_SET) }
+        )
     }
 
     @Test

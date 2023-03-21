@@ -1,18 +1,23 @@
 package com.product.recommend.brand.domain
 
+import com.product.recommend.brand.enums.ProductCategory
 import javax.persistence.*
 
 @Entity
 class BrandEntity(
         @Column(nullable = false)
-        var title: String
+        var title: String,
+        @Enumerated(EnumType.STRING)
+        @Column(nullable = false)
+        var category: ProductCategory
 ) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
 
-    fun modifyTitle(modifyTitle: String){
+    fun modifyBrand(modifyTitle: String, modifyCategory: ProductCategory) {
         this.title = modifyTitle
+        this.category = modifyCategory
     }
 
     override fun toString(): String {
