@@ -1,6 +1,5 @@
 package com.product.recommend.brand.domain
 
-import com.product.recommend.brand.enums.ProductCategory
 import com.product.recommend.brand.repository.BrandRepository
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -10,11 +9,11 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.data.repository.findByIdOrNull
 
 @DataJpaTest
-class BrandRepositoryTest(
+class BrandEntityTest(
         @Autowired
         private val brandRepository: BrandRepository) {
 
-    private var saveBrand: BrandEntity = BrandEntity("test_title", ProductCategory.KEYBOARD)
+    private var saveBrand: BrandEntity = BrandEntity("test_title")
 
     @BeforeEach
     fun setUp() {
@@ -23,7 +22,7 @@ class BrandRepositoryTest(
 
     @Test
     fun createTest() {
-        val brandEntity = BrandEntity("title", ProductCategory.KEYBOARD)
+        val brandEntity = BrandEntity("title")
         val save = brandRepository.save(brandEntity)
 
         assertEquals(save.title, brandEntity.title)
@@ -39,14 +38,11 @@ class BrandRepositoryTest(
     fun modifyTest() {
 
         val findBrand = saveBrand.id?.let { brandRepository.findByIdOrNull(it) }
-        findBrand?.modifyBrand("modify-title", ProductCategory.HEAD_SET)
+        findBrand?.modifyBrand("modify-title")
 
         val expected = brandRepository.findByIdOrNull(findBrand?.id)
 
-        assertAll(
-                { assertEquals(expected?.title, "modify-title") },
-                { assertEquals(expected?.category, ProductCategory.HEAD_SET) }
-        )
+        assertEquals(expected?.title, "modify-title")
     }
 
     @Test

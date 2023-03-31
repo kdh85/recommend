@@ -1,27 +1,25 @@
 package com.product.recommend.brand.domain
 
-import com.product.recommend.brand.enums.ProductCategory
+import com.product.recommend.product.domain.ProductEntity
 import javax.persistence.*
 
 @Entity
 class BrandEntity(
         @Column(nullable = false)
         var title: String,
-        @Enumerated(EnumType.STRING)
-        @Column(nullable = false)
-        var category: ProductCategory
+        @OneToMany(fetch = FetchType.LAZY, mappedBy = "brandEntity", cascade = [CascadeType.ALL])
+        var products: MutableList<ProductEntity> = mutableListOf()
 ) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
 
-    fun modifyBrand(modifyTitle: String, modifyCategory: ProductCategory) {
+    fun modifyBrand(modifyTitle: String) {
         this.title = modifyTitle
-        this.category = modifyCategory
     }
 
-    override fun toString(): String {
-        return "BrandEntity(title='$title', id=$id)"
+    fun addProduct(productEntity: ProductEntity) {
+        this.products.add(productEntity)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -31,6 +29,7 @@ class BrandEntity(
         other as BrandEntity
 
         if (title != other.title) return false
+        if (products != other.products) return false
         if (id != other.id) return false
 
         return true
@@ -38,8 +37,13 @@ class BrandEntity(
 
     override fun hashCode(): Int {
         var result = title.hashCode()
+        result = 31 * result + products.hashCode()
         result = 31 * result + (id?.hashCode() ?: 0)
         return result
+    }
+
+    override fun toString(): String {
+        return "BrandEntity(title='$title', id=$id)"
     }
 
 }
